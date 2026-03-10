@@ -71,7 +71,7 @@ pipeline {
                           --name bensaada-home-assignment \
                           --kubeconfig kubeconfig
 
-                        export KUBECONFIG=$PWD/kubeconfig
+                        export KUBECONFIG=$WORKSPACE/kubeconfig
 
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
                             -f ${helmChart}/values.yaml \
