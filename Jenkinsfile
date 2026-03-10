@@ -63,7 +63,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def helmChart = './k8s-configuration/charts/microservice'
+                    def helmChart = './k8s-configuration/charts/microservice-chart'
                     def valuesFile = "./k8s-configuration/values/${params.SERVICE}"
                         sh """
                         aws eks update-kubeconfig \
