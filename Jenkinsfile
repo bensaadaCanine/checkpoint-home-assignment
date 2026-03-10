@@ -73,7 +73,7 @@ pipeline {
 
                         export KUBECONFIG=$WORKSPACE/kubeconfig
 
-                        echo "${PWD}"
+                        ls -l
 
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
                             -f ${helmChart}/values.yaml \
