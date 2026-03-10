@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:build-${BUILD_NUMNER} ./${SERVICE_DIR}
+                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:build-${BUILD_ID} ./${SERVICE_DIR}
                 """
                 }
             }
@@ -54,7 +54,7 @@ pipeline {
                 script {
                     sh """
                 docker push ${IMAGE_NAME}:latest
-                docker push ${IMAGE_NAME}:build-${BUILD_NUMBER}
+                docker push ${IMAGE_NAME}:build-${BUILD_ID}
                 """
                 }
             }
