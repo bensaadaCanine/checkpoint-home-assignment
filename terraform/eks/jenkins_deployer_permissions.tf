@@ -3,13 +3,15 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
   exec {
-    api_version = "client.authentication.k8s.io/v1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     args = [
       "eks",
       "get-token",
       "--cluster-name",
-      module.eks.cluster_name
+      module.eks.cluster_name,
+      "--region",
+      "eu-west-1"
     ]
   }
 }
@@ -23,13 +25,22 @@ resource "aws_security_group_rule" "jenkins_to_eks" {
   source_security_group_id = data.terraform_remote_state.jenkins.outputs.jenkins_agent_sg.id
 }
 
-resource "kubernetes_namespace_v1" "microservices" {
+resource "kubernetes_namespace" "microservices" {
+  depends_on = [
+    module.eks
+  ]
+
   metadata {
     name = "microservices"
   }
 }
 
-resource "kubernetes_cluster_role_v1" "jenkins" {
+resource "kubernetes_cluster_role" "jenkins" {
+  depends_on = [
+    module.eks,
+    module.eks.access_entries # ensures access entry exists first
+  ]
+
   metadata {
     name = "jenkins-deployer"
   }
@@ -53,16 +64,20 @@ resource "kubernetes_cluster_role_v1" "jenkins" {
   }
 }
 
-resource "kubernetes_role_binding_v1" "jenkins_microservices" {
+resource "kubernetes_cluster_role_binding" "jenkins_deployer" {
+  depends_on = [
+    module.eks,
+    module.eks.access_entries # ensures access entry exists first
+  ]
+
   metadata {
-    name      = "jenkins-deployer-binding"
-    namespace = "microservices"
+    name = "jenkins-deployer-binding"
   }
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role_v1.jenkins.metadata[0].name
+    name      = "cluster-admin"
   }
 
   subject {

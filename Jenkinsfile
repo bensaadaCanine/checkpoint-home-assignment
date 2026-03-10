@@ -63,8 +63,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def helmChart = 'k8s-configuration/charts/microservice'
-                    def valuesFile = "k8s-configuration/values/${params.SERVICE}"
+                    def helmChart = './k8s-configuration/charts/microservice'
+                    def valuesFile = "./k8s-configuration/values/${params.SERVICE}"
                         sh """
                         aws eks update-kubeconfig \
                           --region eu-west-1 \
@@ -86,7 +86,8 @@ pipeline {
     post {
         always {
             echo "Cleaning up local Docker image for ${params.SERVICE}..."
-            sh "docker rmi ${params.SERVICE} || true"
+            sh "docker rmi  ${IMAGE_NAME}:latest || true"
+            sh "docker rmi  ${IMAGE_NAME}:build-${BUILD_ID} || true"
         }
         success {
             echo "Pipeline for ${params.SERVICE} completed successfully!"

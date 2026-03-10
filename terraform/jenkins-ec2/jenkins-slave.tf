@@ -48,9 +48,10 @@ resource "aws_instance" "jenkins_agent" {
               systemctl start docker
               usermod -aG docker ec2-user
 
-              curl -o /usr/local/bin/kubectl \
-                https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.0/2023-07-05/bin/linux/amd64/kubectl
+              curl -Lo /usr/local/bin/kubectl \
+              "https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl"
               chmod +x /usr/local/bin/kubectl
+
 
               curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
