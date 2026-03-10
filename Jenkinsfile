@@ -64,13 +64,14 @@ pipeline {
             steps {
                 script {
                     def helmChart = 'k8s-configuration/charts/microservice'
-                    withKubeConfig([credentialsId: 'kubeconfig-cred']) {
-                        sh "helm upgrade --install ${params.SERVICE} ${helmChart}"
-                    }
+                        sh """
+                            helm upgrade --install ${params.SERVICE} ${helmChart}"
+                        """
                 }
             }
         }
     }
+}
 
     post {
         always {
