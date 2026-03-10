@@ -1,0 +1,78 @@
+name: my-service
+
+image:
+  registry: "371670420772.dkr.ecr.eu-west-1.amazonaws.com"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+containerPort: 8080
+
+env: []
+# - name: ENV_VAR
+#   value: "value"
+
+# Environment variables from ConfigMaps or Secrets
+envFrom: []
+# - configMapRef:
+#     name: my-config
+# - secretRef:
+#     name: my-secret
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: alb
+    # alb.ingress.kubernetes.io/scheme: internet-facing
+    # alb.ingress.kubernetes.io/target-type: ip
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    # alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # alb.ingress.kubernetes.io/certificate-arn: "<ACM_CERT_ARN>"
+  host: "my-service.example.com"
+  path: /
+  pathType: Prefix
+
+serviceAccount:
+  create: true
+  annotations:
+    {}
+    # eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
+
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

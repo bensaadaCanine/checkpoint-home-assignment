@@ -77,7 +77,22 @@ locals {
         service_account_name      = "queue-checker"
         service_account_namespace = "microservices"
       }
-    }
-
+    },
+    {
+      role_name = "aws-load-balancer-controller-role"
+      policies = [
+        {
+          name   = "aws-load-balancer-controller-policies"
+          policy = data.http.alb_controller_policies.response_body
+        }
+      ]
+      oidc_provider_bool = true
+      oidc_provider = {
+        url                       = local.eks_oidc_provider
+        account_id                = data.aws_caller_identity.current.account_id
+        service_account_name      = "aws-load-balancer-controller"
+        service_account_namespace = "kube-system"
+      }
+    },
   ]
 }

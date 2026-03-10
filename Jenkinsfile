@@ -54,7 +54,7 @@ pipeline {
                 script {
                     sh """
                 docker push ${IMAGE_NAME}:latest
-                docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                docker push ${IMAGE_NAME}:${BUILD_TAG}
                 """
                 }
             }
@@ -63,7 +63,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def helmChart = "helm/${params.SERVICE}"
+                    def helmChart = 'k8s-configuration/charts/microservice'
                     withKubeConfig([credentialsId: 'kubeconfig-cred']) {
                         sh "helm upgrade --install ${params.SERVICE} ${helmChart}"
                     }

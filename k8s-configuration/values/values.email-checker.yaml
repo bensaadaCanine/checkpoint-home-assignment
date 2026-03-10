@@ -1,0 +1,25 @@
+name: email-checker
+
+replicaCount: 1
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+
+  host: "email-checker.amazon.com"
+  path: /
+  pathType: Prefix
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::371670420772:role/email-checker-role
+
+env:
+  - name: QUEUE_URL
+    value: "https://sqs.eu-west-1.amazonaws.com/371670420772/emails-queue"

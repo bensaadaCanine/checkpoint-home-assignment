@@ -1,0 +1,17 @@
+name: queue-checker
+
+replicaCount: 1
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::371670420772:role/queue-checker-role
+
+env:
+  - name: QUEUE_URL
+    value: "https://sqs.eu-west-1.amazonaws.com/371670420772/emails-queue"
+  - name: QUEUE_URL
+    value: "emails-from-queue"
