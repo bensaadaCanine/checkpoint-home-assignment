@@ -14,6 +14,15 @@ provider "kubernetes" {
   }
 }
 
+resource "aws_security_group_rule" "jenkins_to_eks" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = module.eks.cluster_security_group_id
+  source_security_group_id = data.terraform_remote_state.jenkins.outputs.jenkins_agent_sg.id
+}
+
 resource "kubernetes_namespace_v1" "microservices" {
   metadata {
     name = "microservices"
@@ -57,8 +66,8 @@ resource "kubernetes_role_binding_v1" "jenkins_microservices" {
   }
 
   subject {
-    kind      = "User"
-    name      = "jenkins"
+    kind      = "Group"
+    name      = "jenkins-deployer"
     api_group = "rbac.authorization.k8s.io"
   }
 }
