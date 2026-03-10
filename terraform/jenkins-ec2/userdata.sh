@@ -15,41 +15,15 @@ rpm --import https://pkg.jenkins.io/rpm-stable/jenkins.io-2026.key
 yum upgrade -y
 
 # -------------------------
-# Install Java
+# Install dependencies
 # -------------------------
-yum install java-21-amazon-corretto -y
+yum install java-21-amazon-corretto git awscli -y
 
 # -------------------------
-# Install AWS CLI
-# -------------------------
-yum install -y awscli
-
-# -------------------------
-# Install Jenkins and enable it
+# Install Jenkins
 # -------------------------
 yum install jenkins -y
 systemctl enable jenkins
-
-# -------------------------
-# Install Docker
-# -------------------------
-yum install -y docker
-systemctl enable docker
-systemctl start docker
-usermod -aG docker ec2-user
-usermod -aG docker jenkins
-
-# -------------------------
-# Install kubectl
-# -------------------------
-curl -o /usr/local/bin/kubectl \
-  https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.0/2023-07-05/bin/linux/amd64/kubectl
-chmod +x /usr/local/bin/kubectl
-
-# -------------------------
-# Install Helm
-# -------------------------
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # -------------------------
 # Retrieve admin user password from SSM
@@ -82,6 +56,9 @@ instance.setSecurityRealm(hudsonRealm)
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
+
+instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
+instance.setNumExecutors(1)
 
 instance.save()
 EOF

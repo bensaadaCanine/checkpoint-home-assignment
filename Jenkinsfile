@@ -13,6 +13,7 @@ pipeline {
         AWS_REGION = 'eu-west-1'
         ECR_REGISTRY = '371670420772.dkr.ecr.eu-west-1.amazonaws.com'
         IMAGE_NAME = "${ECR_REGISTRY}/${params.SERVICE}"
+        SERVICE_DIR = "microservices/${params.SERVICE}"
     }
 
     stages {
@@ -25,8 +26,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def serviceDir = "microservices/${params.SERVICE}"
-                    sh "pytest ${serviceDir} || echo 'No tests found for ${params.SERVICE}'"
+                    sh "pytest ${SERVICE_DIR} || echo 'No tests found for ${params.SERVICE}'"
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${BUILD_TAG} .
+                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${BUILD_TAG} ./${SERVICE_DIR}
                 """
                 }
             }

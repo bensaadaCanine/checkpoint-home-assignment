@@ -39,6 +39,22 @@ resource "aws_security_group" "jenkins_sg" {
     security_groups = [aws_security_group.jenkins_alb_sg.id]
   }
 
+  ingress {
+    description = "Allow 8080 inside VPC"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr_block]
+  }
+
+  ingress {
+    description = "SSH to Jenkins"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr_block]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -47,10 +63,10 @@ resource "aws_security_group" "jenkins_sg" {
   }
 }
 
-resource "aws_instance" "jenkins" {
+resource "aws_instance" "jenkins_master" {
   ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = "t3.micro"
-  subnet_id              = data.terraform_remote_state.vpc.outputs.vpc.private_subnets[0]
+  subnet_id              = local.jenkins_subnet
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   key_name               = "jenkins-server"
   iam_instance_profile   = aws_iam_instance_profile.jenkins_profile.name
@@ -58,7 +74,7 @@ resource "aws_instance" "jenkins" {
   user_data = file("userdata.sh")
 
   tags = {
-    Name              = "jenkins-server"
+    Name              = "jenkins-master"
     terraform_managed = true
   }
 }

@@ -49,7 +49,7 @@ resource "aws_lb_target_group" "jenkins_tg" {
 # Register Jenkins EC2 to the target group
 resource "aws_lb_target_group_attachment" "jenkins_attach" {
   target_group_arn = aws_lb_target_group.jenkins_tg.arn
-  target_id        = aws_instance.jenkins.id
+  target_id        = aws_instance.jenkins_master.id
   port             = 8080
 }
 

@@ -1,5 +1,8 @@
 locals {
-  vpc_id = data.terraform_remote_state.vpc.outputs.vpc.vpc_id
+  vpc_id             = data.terraform_remote_state.vpc.outputs.vpc.vpc_id
+  vpc_cidr_block     = data.terraform_remote_state.vpc.outputs.vpc.vpc_cidr_block
+  jenkins_subnet     = data.terraform_remote_state.vpc.outputs.vpc.private_subnets[0]
+  jenkins_master_url = "http://${aws_instance.jenkins_master.private_ip}:8080"
 }
 data "terraform_remote_state" "vpc" {
   backend = "s3"
@@ -30,4 +33,9 @@ data "aws_ami" "amazon_linux_2023" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+}
+
+data "aws_ssm_parameter" "jenkins_agent_secret" {
+  name            = "/jenkins/agent-1-secret"
+  with_decryption = true
 }

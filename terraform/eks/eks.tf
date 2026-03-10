@@ -32,7 +32,7 @@ module "eks" {
   access_entries = {
     jenkins = {
       principal_arn     = data.terraform_remote_state.jenkins.outputs.jenkins_iam_role.arn
-      kubernetes_groups = ["jenkins-deployers"]
+      kubernetes_groups = ["jenkins-deployer"]
     }
   }
 

@@ -10,17 +10,20 @@ Components:
 - AWS Load Balancer Controller (ALB)
 - Amazon SQS
 - Amazon S3
+- Amazon EC2 Instances
 - AWS SSM Parameter Store
 - Amazon ECR
 - Terraform
-- GitHub Actions
+- Jenkins
 
 ## Services
 
 ### Microservice 1
+
 REST API receiving POST requests and publishing validated payloads to SQS.
 
 ### Microservice 2
+
 Worker that polls SQS and uploads messages to S3.
 
 ## Deployment Steps
@@ -50,3 +53,4 @@ curl -X POST http://<ALB-DNS>/publish -H "Content-Type: application/json" -d '{
 },
 "token": "SuperSecretToken123"
 }'
+
