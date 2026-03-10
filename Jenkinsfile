@@ -74,6 +74,7 @@ pipeline {
                         export KUBECONFIG=$WORKSPACE/kubeconfig
 
                         ls -l
+                        ls -lR ./k8s-configuration
 
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
                             -f ${helmChart}/values.yaml \
