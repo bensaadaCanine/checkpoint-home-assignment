@@ -33,8 +33,6 @@ Worker that polls SQS and uploads messages to S3.
 
 ### Prerequisites
 
-Install the following on your machine:
-
 - AWS CLI
 - HELM
 - kubectl
@@ -42,7 +40,7 @@ Install the following on your machine:
 ### 1. Deploy Infrastructure
 
 ```
-SERVICES=("remote-backend" "s3-buckets" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles")
+SERVICES=("remote-backend" "s3-buckets" "ssm" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles")
 cd terraform
 for folder in $SERVICES; do
   cd $folder
