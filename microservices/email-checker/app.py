@@ -6,25 +6,14 @@ import logger
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-logging.basicConfig(
-    level=logging.INFO,
-    stream=sys.stdout,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-)
 logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI()
 
-logger.info("Initializing boto3 clients")
-sqs = boto3.client("sqs", region_name=os.getenv("AWS_REGION", "eu-west-1"))
-ssm = boto3.client("ssm", region_name=os.getenv("AWS_REGION", "eu-west-1"))
-
-QUEUE_URL = os.environ.get("QUEUE_URL")
-
-logger.info("Retrieving validation token from SSM")
-TOKEN_PARAM = ssm.get_parameter(
-    Name="/email-checker/validation-token", WithDecryption=True
-)["Parameter"]["Value"]
+sqs: "boto3.client"
+ssm: "boto3.client"
+QUEUE_URL: str
+TOKEN_PARAM: str
 
 
 class EmailData(BaseModel):
@@ -37,6 +26,25 @@ class EmailData(BaseModel):
 class RequestModel(BaseModel):
     data: EmailData
     token: str
+
+
+@app.on_event("startup")
+def startup_event():
+    global sqs, ssm, QUEUE_URL, TOKEN_PARAM
+
+    QUEUE_URL = os.environ["QUEUE_URL"]
+    region = os.getenv("AWS_REGION", "eu-west-1")
+
+    logger.info("Initializing boto3 clients")
+    sqs = boto3.client("sqs", region_name=region)
+    ssm = boto3.client("ssm", region_name=region)
+
+    logger.info("Retrieving validation token from SSM")
+    TOKEN_PARAM = ssm.get_parameter(
+        Name="/email-checker/validation-token", WithDecryption=True
+    )["Parameter"]["Value"]
+
+    logger.info("Startup initialization completed")
 
 
 @app.post("/publish")
