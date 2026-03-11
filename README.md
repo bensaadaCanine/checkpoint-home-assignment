@@ -39,7 +39,7 @@ Worker that polls SQS and uploads messages to S3.
 
 ### 1. Deploy Infrastructure
 
-```
+```sh
 SERVICES=("remote-backend" "s3-buckets" "ssm" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles")
 cd terraform
 for folder in $SERVICES; do
@@ -53,7 +53,7 @@ cd ..
 
 ### 2. Configure kubectl
 
-```
+```sh
 aws eks update-kubeconfig --region eu-west-1 \
   --name bensaada-home-assignment \
   --alias bensaada-home-assignment
@@ -61,7 +61,7 @@ aws eks update-kubeconfig --region eu-west-1 \
 
 ### 3. Deploy ALB Controller In Kubernetes (HELM)
 
-```
+```sh
 helm dependency build ./k8s-configuration/charts/aws-load-balancer-controller
 helm upgrade --install aws-load-balancer-controller \
   ./k8s-configuration/charts/aws-load-balancer-controller \
@@ -73,21 +73,21 @@ helm upgrade --install aws-load-balancer-controller \
 
 Execute the following command to get the DNS of Jenkins:
 
-```
+```sh
 aws elbv2 describe-load-balancers --names 'jenkins-alb' \
   --query "LoadBalancers[0].DNSName" --output text
 ```
 
 Execute the following command to get the admin user password:
 
-```
+```sh
 aws ssm get-parameter --name '/jenkins/admin-password' --with-decryption \
   --query "Parameter.Value" --output text
 ```
 
 ### 4. Test API
 
-```
+```sh
 EMAIL_CHECKER_DNS=$(kubectl get ingress email-checker -n microservices -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 TOKEN=$(aws ssm get-parameter --name '/email-checker/validation-token' --with-decryption --query "Parameter.Value" --output text)
 curl -X POST "http://${EMAIL_CHECKER_DNS}/send" \
