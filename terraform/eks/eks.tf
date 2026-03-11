@@ -29,14 +29,6 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
-  access_entries = {
-    jenkins = {
-      principal_arn     = data.terraform_remote_state.jenkins.outputs.jenkins_iam_role.arn
-      kubernetes_groups = ["jenkins"]
-      type              = "STANDARD"
-    }
-  }
-
   # Network
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc.vpc_id
   subnet_ids  = data.terraform_remote_state.vpc.outputs.vpc.private_subnets
