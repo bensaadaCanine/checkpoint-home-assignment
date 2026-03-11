@@ -35,6 +35,7 @@ service:
 
 ingress:
   enabled: false
+  className: alb
   annotations:
     {}
     # kubernetes.io/ingress.class: alb
@@ -43,7 +44,6 @@ ingress:
     # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
     # alb.ingress.kubernetes.io/ssl-redirect: "443"
     # alb.ingress.kubernetes.io/certificate-arn: "<ACM_CERT_ARN>"
-  host: "my-service.example.com"
   path: /
   pathType: Prefix
 
