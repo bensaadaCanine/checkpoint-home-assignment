@@ -74,10 +74,11 @@ pipeline {
                         export KUBECONFIG=$WORKSPACE/kubeconfig
 
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
+                            --set image.tag="build-${BUILD_ID}" \
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
                            -n microservices
-                        sleep 20
+                        sleep 5
                         kubectl rollout status deployment/${params.SERVICE} -n microservices
                         """
                 }
