@@ -26,8 +26,14 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh "pip3 install -r ${SERVICE_DIR}/requirements.txt"
-                    sh "pytest ${SERVICE_DIR} -v || echo 'No tests found for ${params.SERVICE}'"
+                    sh """
+                    if find ${SERVICE_DIR} -name "*test*" | grep -q .; then
+                        pip3 install -r ${SERVICE_DIR}/requirements.txt
+                        pytest ${SERVICE_DIR} -v
+                    else
+                        echo "No tests found for ${params.SERVICE}, skipping..."
+                    fi
+                    """
                 }
             }
         }
