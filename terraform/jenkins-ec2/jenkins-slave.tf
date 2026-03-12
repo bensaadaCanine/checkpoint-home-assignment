@@ -48,4 +48,6 @@ resource "aws_instance" "jenkins_agent" {
   tags = {
     Name = "jenkins-agent-${each.value}"
   }
+
+  depends_on = [aws_lb.jenkins_alb]
 }

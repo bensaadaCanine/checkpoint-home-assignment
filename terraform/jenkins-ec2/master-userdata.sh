@@ -62,6 +62,16 @@ instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
 instance.save()
 EOF
 
+cat <<'EOF' >/var/lib/jenkins/init.groovy.d/disable-csrf.groovy
+#!groovy
+import jenkins.model.*
+import hudson.security.csrf.*
+
+def instance = Jenkins.getInstance()
+instance.setCrumbIssuer(null)
+instance.save()
+EOF
+
 # -------------------------
 # Disable the setup wizard
 # -------------------------

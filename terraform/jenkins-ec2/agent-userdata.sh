@@ -13,13 +13,21 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 pip3 install pytest requests boto3
 
+# Swap space
 fallocate -l 2G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
-echo '/swapfile none swap sw 0 0' >> /etc/fstab
+echo '/swapfile none swap sw 0 0' >>/etc/fstab
 
 mkdir -p /home/ec2-user/jenkins
+cd /home/ec2-user/jenkins
+
+# Free tmp disk space resolution
+mkdir -p /home/ec2-user/tmp
+chmod 1777 /home/ec2-user/tmp
+mount --bind /home/ec2-user/tmp /tmp
+echo '/home/ec2-user/tmp /tmp none bind 0 0' >>/etc/fstab
 
 # Injected by Terraform templatefile()
 JENKINS_MASTER_URL="${jenkins_master_url}"
@@ -31,28 +39,21 @@ until curl -s -o /dev/null -w "%%{http_code}" \
   echo "Waiting for Jenkins master..."
   sleep 10
 done
-
-# Fetch crumb
-CRUMB=$(curl -s -u "admin:$JENKINS_ADMIN_PASSWORD" \
-  "$JENKINS_MASTER_URL/crumbIssuer/api/json" \
-  | jq -r '[.crumbRequestField, .crumb] | join(":")')
+sleep 10
 
 # Create agent node on Jenkins master
 AGENT_JSON="{\"name\": \"${agent_name}\", \"nodeDescription\": \"EC2 agent\", \"numExecutors\": \"2\", \"remoteFS\": \"/home/ec2-user/jenkins\", \"labelString\": \"${agent_name}\", \"mode\": \"NORMAL\", \"retentionStrategy\": {\"stapler-class\": \"hudson.slaves.RetentionStrategy\$Always\"}, \"nodeProperties\": {\"stapler-class-bag\": \"true\"}, \"launcher\": {\"stapler-class\": \"hudson.slaves.JNLPLauncher\", \"webSocket\": true}}"
 
 curl -s -u "admin:$JENKINS_ADMIN_PASSWORD" \
-  -H "$CRUMB" \
   -X POST "$JENKINS_MASTER_URL/computer/doCreateItem?name=${agent_name}&type=hudson.slaves.DumbSlave" \
   --data-urlencode "json=$AGENT_JSON"
 
 # Fetch the agent secret Jenkins generated for the agent
 AGENT_SECRET=$(curl -s -u "admin:$JENKINS_ADMIN_PASSWORD" \
-  -H "$CRUMB" \
-  "$JENKINS_MASTER_URL/computer/${agent_name}/slave-agent.jnlp" \
-  | grep -oP '(?<=<argument>)[a-f0-9]{64}(?=</argument>)')
+  "$JENKINS_MASTER_URL/computer/${agent_name}/slave-agent.jnlp" |
+  grep -oP '(?<=<argument>)[a-f0-9]{64}(?=</argument>)')
 
 # Download Jenkins agent jar
-wget -O /home/ec2-user/jenkins/agent.jar \
-  "$JENKINS_MASTER_URL/jnlpJars/agent.jar"
+curl -sO "$JENKINS_MASTER_URL/jnlpJars/agent.jar"
 
 java -jar agent.jar -url $JENKINS_MASTER_URL -secret $AGENT_SECRET -name "${agent_name}" -webSocket -workDir "/home/ec2-user/jenkins"
