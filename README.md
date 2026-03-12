@@ -115,5 +115,13 @@ helm upgrade --install kube-prometheus-stack ./k8s-configuration/charts/kube-pro
   --namespace monitoring --create-namespace \
   -f ./k8s-configuration/charts/kube-prom-stack/values.yaml \
   -f ./k8s-configuration/values/kube-prom-stack.yaml \
-  --set grafana.adminPassword="${GRAFANA_ADMIN_PASSWORD}"
+  --set kube-prometheus-stack.grafana.adminPassword="${GRAFANA_ADMIN_PASSWORD}"
+```
+
+Get Grafana DNS from here:
+
+```sh
+kubectl get ingress kube-prometheus-stack-grafana \
+  -n monitoring \
+  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
