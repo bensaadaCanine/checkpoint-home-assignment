@@ -15,7 +15,6 @@ kube-prometheus-stack:
 
   prometheus:
     prometheusSpec:
-      # Pick up ServiceMonitors from ALL namespaces (not just kube-prometheus-stack's own)
       serviceMonitorSelectorNilUsesHelmValues: false
       serviceMonitorNamespaceSelector: {}
       serviceMonitorSelector: {}
@@ -36,7 +35,11 @@ kube-prometheus-stack:
         alb.ingress.kubernetes.io/scheme: internet-facing
         alb.ingress.kubernetes.io/target-type: ip
         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-        alb.ingress.kubernetes.io/healthcheck-path: /healthy
+        alb.ingress.kubernetes.io/healthcheck-path: /-/healthy
+      paths:
+        - /
+      hosts:
+        - ""
 
   alertmanager:
     enabled: true
