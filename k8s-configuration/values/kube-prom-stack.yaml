@@ -6,6 +6,7 @@ kube-prometheus-stack:
     ingress:
       enabled: true
       ingressClassName: alb
+      pathType: Prefix
       annotations:
         alb.ingress.kubernetes.io/scheme: internet-facing
         alb.ingress.kubernetes.io/target-type: ip
