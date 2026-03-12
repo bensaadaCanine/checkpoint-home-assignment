@@ -52,6 +52,7 @@ ingress:
     # alb.ingress.kubernetes.io/certificate-arn: "<ACM_CERT_ARN>"
   path: /
   pathType: Prefix
+  portName: app
 
 serviceAccount:
   create: true
