@@ -84,3 +84,28 @@ chown -R jenkins:jenkins /var/lib/jenkins
 # Jenkins start
 # -------------------------
 systemctl start jenkins
+
+# -------------------------
+# Install required plugins and restart
+# -------------------------
+until curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/login | grep -q "200"; do
+  sleep 10
+done
+
+wget -O /usr/local/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
+
+java -jar /usr/local/bin/jenkins-cli.jar \
+  -s http://localhost:8080 \
+  -auth "admin:$JENKINS_ADMIN_PASSWORD" \
+  install-plugin \
+  workflow-job \
+  workflow-cps \
+  workflow-aggregator \
+  git \
+  pipeline-model-definition \
+  -restart
+
+sleep 30
+until curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/login | grep -q "200"; do
+  sleep 10
+done
