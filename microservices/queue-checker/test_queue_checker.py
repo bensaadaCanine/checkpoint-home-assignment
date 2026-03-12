@@ -7,30 +7,29 @@ Run with:
 """
 
 import json
-import sys
 import os
+import sys
 import unittest
-from unittest.mock import patch
 from datetime import datetime, timezone
-from botocore.exceptions import ClientError
-
-# ── Make app.py importable ────────────────────────────────────────────────────
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from unittest.mock import patch
 
 import app
+from botocore.exceptions import ClientError
 
 SAMPLE_MSG = {
     "MessageId": "msg-001",
     "ReceiptHandle": "rh-abc123",
-    "Body": json.dumps({
-        "data": {
-            "email_subject": "Happy new year!",
-            "email_sender": "John doe",
-            "email_timestream": "1693561101",
-            "email_content": "Just want to say... Happy new year!!!",
-        },
-        "received_at": "2024-01-01T00:00:00Z",
-    }),
+    "Body": json.dumps(
+        {
+            "data": {
+                "email_subject": "Happy new year!",
+                "email_sender": "John doe",
+                "email_timestream": "1693561101",
+                "email_content": "Just want to say... Happy new year!!!",
+            },
+            "received_at": "2024-01-01T00:00:00Z",
+        }
+    ),
 }
 
 
@@ -111,7 +110,8 @@ class TestProcessMessage(unittest.TestCase):
     def test_delete_failure_still_returns_true(self, mock_upload, mock_delete):
         mock_upload.return_value = "emails/2024/01/01/msg-001.json"
         mock_delete.side_effect = ClientError(
-            {"Error": {"Code": "ReceiptHandleIsInvalid", "Message": "expired"}}, "DeleteMessage"
+            {"Error": {"Code": "ReceiptHandleIsInvalid", "Message": "expired"}},
+            "DeleteMessage",
         )
         result = app.process_message(SAMPLE_MSG)
         self.assertTrue(result)

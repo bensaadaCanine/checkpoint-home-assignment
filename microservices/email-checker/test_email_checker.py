@@ -7,14 +7,11 @@ Run with:
 """
 
 import json
-import sys
 import os
+import sys
 import unittest
-from unittest.mock import patch
 from datetime import datetime, timezone
-
-# ── Make app.py importable ────────────────────────────────────────────────────
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from unittest.mock import patch
 
 import app
 

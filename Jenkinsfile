@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     sh 'pip3 install pytest boto3 flask'
-                    sh "pytest ${SERVICE_DIR}/tests -v || echo 'No tests found for ${params.SERVICE}'"
+                    sh "pytest ${SERVICE_DIR} -v || echo 'No tests found for ${params.SERVICE}'"
                 }
             }
         }
