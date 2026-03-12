@@ -89,6 +89,13 @@ aws ssm get-parameter --name '/jenkins/admin-password' --with-decryption \
   --query "Parameter.Value" --output text
 ```
 
+#### IF JENKINS CAN'T DEPLOY TO KUBERNETES CLUSTER PLEASE TRY EXECUTE THE CODE BELOW AND RESTART YOUR JENKINS BUILD
+
+```sh
+cd ./terraform/eks
+terraform apply -replace=aws_eks_access_entry.jenkins
+```
+
 ### 5. Test API
 
 ```sh
