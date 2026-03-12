@@ -133,3 +133,5 @@ kubectl get ingress kube-prometheus-stack-prometheus \
   -n monitoring \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
+<img width="1883" height="900" alt="image" src="https://github.com/user-attachments/assets/bd1e538a-a240-4f7a-b2ac-2af1d5e485ea" />
+
