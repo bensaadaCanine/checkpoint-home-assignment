@@ -53,7 +53,8 @@ cd ..
 
 #### Bonus
 
-You can add/remove Jenkins agents by changing the local `jenkins_agents` inside `jenkins-ec2/data.tf` and re-apply terraform.
+You can add/remove Jenkins agents by changing the local `jenkins_agents` inside `jenkins-ec2/data.tf`
+and re-apply terraform for `jenkins-ec2` folder.
 
 ### 2. Configure kubectl
 
