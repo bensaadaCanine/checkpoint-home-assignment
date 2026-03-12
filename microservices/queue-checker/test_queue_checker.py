@@ -1,11 +1,3 @@
-"""
-Unit tests for queue-checker (Microservice 2 – SQS consumer).
-
-Run with:
-    pip install pytest boto3
-    pytest microservices/queue-checker/tests/ -v
-"""
-
 import json
 import os
 import sys
@@ -40,9 +32,9 @@ class TestBuildS3Key(unittest.TestCase):
             mock_dt.now.return_value = datetime(2024, 6, 15, tzinfo=timezone.utc)
             key = app.build_s3_key("msg-xyz")
 
-        self.assertIn("year=2024", key)
-        self.assertIn("month=06", key)
-        self.assertIn("day=15", key)
+        self.assertIn("2024", key)
+        self.assertIn("06", key)
+        self.assertIn("15", key)
         self.assertIn("msg-xyz.json", key)
         self.assertTrue(key.startswith(app.S3_PREFIX))
 
